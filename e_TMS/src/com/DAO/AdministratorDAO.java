@@ -8,7 +8,7 @@ import com.BeanClasses.Vendor;
 public interface AdministratorDAO{
 	
       public String admLogin(String admUserName,String admPassword);
-      public String registerVendor(String VUserName,String vPassword);
+      public String registerVendor(Vendor vendor);
       public List<Vendor> getAllVendor();
       public String createTender(Tender t);
       public boolean removeTender(Tender t);

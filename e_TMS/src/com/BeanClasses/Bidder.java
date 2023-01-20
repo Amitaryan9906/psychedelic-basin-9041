@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Bidder implements Serializable{
+	public Bidder() {};
 	public String getBidId() {
 		return bidId;
 	}
