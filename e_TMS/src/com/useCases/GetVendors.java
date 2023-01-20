@@ -9,10 +9,11 @@ import com.Exception.VendorException;
 
 public class GetVendors {
 public static void main(String[] args) throws VendorException {
-	AdministratorDAO ps = new AdministratorDaoImpl();
+	AdministratorDAO adDao = new AdministratorDaoImpl();
 	
-	List<Vendor> vendors = ps.getAllVendor();
+	List<Vendor> vendors = adDao.getAllVendor();
 	
 	vendors.forEach(v -> System.out.println(v));
+	
 }
 }
