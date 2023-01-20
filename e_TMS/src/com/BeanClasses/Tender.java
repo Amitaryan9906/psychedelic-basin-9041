@@ -7,6 +7,7 @@ public class Tender implements Serializable{
 	/**
 	 * 
 	 */
+	public Tender() {};
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String name;
