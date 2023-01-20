@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.BeanClasses.Tender;
@@ -36,7 +37,7 @@ String status = "Registration Failed!";
 			
 			if(rs.next()){
 				
-				status = "Registration Declined!<br>Email Id already Registered";
+				status = "Registration Declined! "+"\n"+"Email Id already Registered";
 			}
 			else{
 			
@@ -56,7 +57,7 @@ String status = "Registration Failed!";
 					int k = ps.executeUpdate();
 					
 					if(k>0)
-						status = "Registration Successful.<br> Your Vendor id: "+vendor.getId()+"<br>Thanks For Registration";
+						status = "Registration Successful.Your Vendor id: "+vendor.getId()+"Thanks For Registration";
 				}
 				
 		}
@@ -104,7 +105,39 @@ String status = "Registration Failed!";
 	@Override
 	public List<Vendor> getAllVendor() {
 		// TODO Auto-generated method stub
-		return null;
+	List<Vendor> vendors = new ArrayList<>();
+		
+		try(Connection conn = DButil.provideConnection()) {
+			
+			PreparedStatement ps = conn.prepareStatement("select * from Vendor");			
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				
+				String Id = rs.getString("Id");
+				String name = rs.getString("name");
+		        String mobile=rs.getNString("mobile");
+		        String email=rs.getString("email");
+		        String password=rs.getString("password");
+		        String address=rs.getString("address");
+		        String company = rs.getString("company");
+				
+				Vendor vendor=new Vendor(Id,name,mobile,email,password,address,company);
+				
+				vendors.add(vendor);
+			}
+			
+			if(vendors.size() == 0)
+				throw new VendorException("Vendors not found");
+			
+		} catch (Exception e) {
+			
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return vendors;
 	}
 
 }
