@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.BeanClasses.Tender;
@@ -15,11 +16,22 @@ import com.Utility.DButil;
 public class AdministratorDaoImpl implements AdministratorDAO{
 
 	@Override
-	public String admLogin(String admUserName, String admPassword) {
-     
+	public String admLogin(String AdmEmail, String admPassword,String adminName) {
+		 String message = "Invalid username or password";
+	        try (Connection con = DButil.provideConnection()) {
+	            PreparedStatement ps = con.prepareStatement("SELECT * FROM administrator WHERE email = ? AND password = ?");
+	            ps.setString(1, AdmEmail);
+	            ps.setString(2, admPassword);
+	            ResultSet rs = ps.executeQuery();
+	            if (rs.next()) {
+	                message = "Successfully logged in.";
+	                adminName = rs.getString("name");
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return message + " Welcome " + adminName;
 		
-		
-		return null;
 	}
 
 	@Override
@@ -70,12 +82,30 @@ String status = "Registration Failed!";
 	}
 
 	@Override
-	public String createTender(Tender t) {
-		// TODO Auto-generated method stub
+	public String createTender(Tender t) {		
+      	String message="Tender not created";
+      
+        try (Connection con = DButil.provideConnection()) {
+            PreparedStatement ps = con.prepareStatement("insert into Tender values(?,?,?,?,?,?,?)");
+
+            ps.setString(1, t.getId());
+            ps.setString(2, t.getName());
+            ps.setString(3, t.getType());
+            ps.setInt(4, t.getPrice());
+            ps.setString(5, t.getDesc());
+            ps.setObject(6, t.getDeadline());
+            ps.setString(7, t.getLocation());
+
+            int a = ps.executeUpdate();
+            if (a > 0) {
+                message = "Tender created successfully";
+            }
+        } catch (SQLException e) {
+            message = e.getMessage();
+            e.printStackTrace();
+        }
 		
-		
-		
-		return null;
+		return message;
 	}
 
 	@Override
@@ -139,5 +169,45 @@ String status = "Registration Failed!";
 		
 		return vendors;
 	}
+
+	@Override
+	public String registerAdmin(String id, String name, String email, String password, String mobile) {
+		 String message = "Admin registration failed";
+
+	        try (Connection con = DButil.provideConnection()) {
+	            PreparedStatement ps = con.prepareStatement("INSERT INTO administrator (Id,name,email,password,mobile) VALUES (?,?,?,?,?)");
+	            ps.setString(1, id);
+	            ps.setString(2, name);
+	            ps.setString(3, email);
+	            ps.setString(4, password);
+	            ps.setString(5, mobile);
+	            int a = ps.executeUpdate();
+	            if (a > 0) {
+	                message = "Admin registered successfully";
+	            }
+	        } catch (SQLException e) {
+	            message = e.getMessage();
+	            e.printStackTrace();
+	        }
+	        return message;
+	}
+
+	@Override
+	public boolean isAdminExist(String email) {
+		  boolean isExist = false;
+
+	        try (Connection con = DButil.provideConnection()) {
+	            PreparedStatement ps = con.prepareStatement("SELECT * FROM administrator WHERE email = ?");
+	            ps.setString(1, email);
+	            ResultSet rs = ps.executeQuery();
+	            if (rs.next()) {
+	                isExist = true;
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return isExist;
+	}
+	
 
 }

@@ -1,6 +1,7 @@
 package com.BeanClasses;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Tender implements Serializable{
@@ -14,9 +15,9 @@ public class Tender implements Serializable{
 	private String type;
 	private int price;
 	private String desc;
-	private Date deadline;
+	private LocalDate deadline;
 	private String location;
-	public Tender(String id, String name, String type, int price, String desc, Date deadline, String location) {
+	public Tender(String id, String name, String type, int price, String desc, LocalDate deadline, String location) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -56,10 +57,10 @@ public class Tender implements Serializable{
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	public Date getDeadline() {
+	public LocalDate getDeadline() {
 		return deadline;
 	}
-	public void setDeadline(Date deadline) {
+	public void setDeadline(LocalDate deadline) {
 		this.deadline = deadline;
 	}
 	public String getLocation() {
