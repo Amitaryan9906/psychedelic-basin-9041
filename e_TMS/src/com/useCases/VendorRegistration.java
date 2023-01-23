@@ -8,7 +8,7 @@ import com.DAO.AdministratorDaoImpl;
 
 public class VendorRegistration {
 
-	public static void main(String[] args) {
+	public static void registerVendor() {
     Scanner sc=new Scanner(System.in);
     
     AdministratorDAO vd=new AdministratorDaoImpl();
