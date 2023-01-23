@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -109,26 +111,69 @@ String status = "Registration Failed!";
 	}
 
 	@Override
-	public boolean removeTender(Tender t) {
-		// TODO Auto-generated method stub
-		return false;
+	public  boolean removeTender(String Id) {
+		 boolean res = false;
+	        try (Connection con = DButil.provideConnection()) {
+	            PreparedStatement ps = con.prepareStatement("DELETE FROM Tender WHERE id = ?");
+	            ps.setString(1, Id);
+	            int a = ps.executeUpdate();
+	            if (a > 0) {
+	            	res=true;
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return res;
 	}
 
 	@Override
 	public String updateTender(Tender tender) {
-		// TODO Auto-generated method stub
-		return null;
+		 String message = "Tender not updated";
+	        try (Connection con = DButil.provideConnection()) {
+	            PreparedStatement ps = con.prepareStatement("UPDATE Tender SET name = ?, type = ?, price = ?, descr = ?, deadline = ?, location = ? WHERE id = ?");
+	            ps.setString(1, tender.getName());
+	            ps.setString(2, tender.getType());
+	            ps.setInt(3, tender.getPrice());
+	            ps.setString(4, tender.getDesc());
+	            ps.setDate(5, java.sql.Date.valueOf(tender.getDeadline()));
+	            ps.setString(6, tender.getLocation());
+	            ps.setString(7, tender.getId());
+	            int a = ps.executeUpdate();
+	            if (a > 0) {
+	                message = "Tender updated successfully!";
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return message;
 	}
 
 	@Override
 	public List<Tender> getAllTenders() {
-		// TODO Auto-generated method stub
-		return null;
+		 List<Tender> tenders = new ArrayList<>();
+	        try (Connection con = DButil.provideConnection()) {
+	            Statement st = con.createStatement();
+	            ResultSet rs = st.executeQuery("SELECT * FROM Tender");
+	            while (rs.next()) {
+	                String id = rs.getString("id");
+	                String name = rs.getString("name");
+	                String type = rs.getString("type");
+	                int price = rs.getInt("price");
+	                String desc = rs.getString("descr");
+	                LocalDate deadline = rs.getDate("deadline").toLocalDate();
+	                String location = rs.getString("location");
+	                tenders.add(new Tender(id, name, type, price, desc, deadline, location));
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return tenders;
 	}
 
 	@Override
 	public String assignTenderToVendor(String tenderId, String vendorId, String bidderId) {
 		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
