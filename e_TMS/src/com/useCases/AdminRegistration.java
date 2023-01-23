@@ -8,7 +8,7 @@ import com.DAO.AdministratorDaoImpl;
 
 public class AdminRegistration {
 
-    public static void main(String[] args) {
+    public static void adminReg() {
         Scanner sc = new Scanner(System.in);
         AdministratorDAO aDao = new AdministratorDaoImpl();
         Administrator adm = new Administrator();

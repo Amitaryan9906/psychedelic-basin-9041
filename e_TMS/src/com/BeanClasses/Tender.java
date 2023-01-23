@@ -57,7 +57,7 @@ public class Tender implements Serializable{
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	public LocalDate getDeadline() {
+	public LocalDate getDeadline(String string) {
 		return deadline;
 	}
 	public void setDeadline(LocalDate deadline) {

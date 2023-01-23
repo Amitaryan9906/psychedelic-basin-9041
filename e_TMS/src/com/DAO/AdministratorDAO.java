@@ -12,7 +12,7 @@ public interface AdministratorDAO{
       public String registerVendor(Vendor vendor);
       public List<Vendor> getAllVendor();
       public String createTender(Tender t);
-      public boolean removeTender(Tender t);
+      public boolean removeTender(String Id);
       public String updateTender(Tender tender);
 	  public List<Tender> getAllTenders();
 	  public String assignTenderToVendor(String tenderId,String vendorId,String bidderId);
