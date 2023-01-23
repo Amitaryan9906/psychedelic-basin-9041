@@ -1,5 +1,5 @@
 package com.DAO;
-
+import java.sql.Date;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,21 +18,25 @@ import com.Utility.DButil;
 public class AdministratorDaoImpl implements AdministratorDAO{
 
 	@Override
-	public String admLogin(String AdmEmail, String admPassword,String adminName) {
-		 String message = "Invalid username or password";
+	public boolean admLogin(String AdmEmail, String admPassword,String adminName) {
+		boolean res=false;
+//		 String message = "Invalid username or password";
 	        try (Connection con = DButil.provideConnection()) {
 	            PreparedStatement ps = con.prepareStatement("SELECT * FROM administrator WHERE email = ? AND password = ?");
 	            ps.setString(1, AdmEmail);
 	            ps.setString(2, admPassword);
 	            ResultSet rs = ps.executeQuery();
 	            if (rs.next()) {
-	                message = "Successfully logged in.";
+	            	res=false;
+//	                message = "Successfully logged in.";
 	                adminName = rs.getString("name");
+	                
 	            }
 	        } catch (SQLException e) {
+	        	res=false;
 	            e.printStackTrace();
 	        }
-	        return message + " Welcome " + adminName;
+	        return res;
 		
 	}
 
@@ -88,15 +92,15 @@ String status = "Registration Failed!";
       	String message="Tender not created";
       
         try (Connection con = DButil.provideConnection()) {
-            PreparedStatement ps = con.prepareStatement("insert into Tender values(?,?,?,?,?,?,?)");
+            PreparedStatement ps = con.prepareStatement("insert into Tender values(?,?,?,?,?,curdate(),?)");
 
             ps.setString(1, t.getId());
             ps.setString(2, t.getName());
             ps.setString(3, t.getType());
             ps.setInt(4, t.getPrice());
             ps.setString(5, t.getDesc());
-            ps.setObject(6, t.getDeadline());
-            ps.setString(7, t.getLocation());
+//            ps.setObject(6, t.getDeadline());
+            ps.setString(6, t.getLocation());
 
             int a = ps.executeUpdate();
             if (a > 0) {
@@ -130,14 +134,14 @@ String status = "Registration Failed!";
 	public String updateTender(Tender tender) {
 		 String message = "Tender not updated";
 	        try (Connection con = DButil.provideConnection()) {
-	            PreparedStatement ps = con.prepareStatement("UPDATE Tender SET name = ?, type = ?, price = ?, descr = ?, deadline = ?, location = ? WHERE id = ?");
+	            PreparedStatement ps = con.prepareStatement("UPDATE Tender SET name = ?, type = ?, price = ?, descr = ?, deadline = curdate(), location = ? WHERE id = ?");
 	            ps.setString(1, tender.getName());
 	            ps.setString(2, tender.getType());
 	            ps.setInt(3, tender.getPrice());
 	            ps.setString(4, tender.getDesc());
-	            ps.setDate(5, java.sql.Date.valueOf(tender.getDeadline()));
-	            ps.setString(6, tender.getLocation());
-	            ps.setString(7, tender.getId());
+//	            ps.setDate(5, java.sql.Date.valueOf(tender.getDeadline()));
+	            ps.setString(5, tender.getLocation());
+	            ps.setString(6, tender.getId());
 	            int a = ps.executeUpdate();
 	            if (a > 0) {
 	                message = "Tender updated successfully!";
@@ -172,14 +176,46 @@ String status = "Registration Failed!";
 
 	@Override
 	public String assignTenderToVendor(String tenderId, String vendorId, String bidderId) {
-		// TODO Auto-generated method stub
-		
-		return null;
+	    String message = "Tender not assigned to vendor";
+	    try (Connection con = DButil.provideConnection()) {
+	        // check if the tender exists
+	        PreparedStatement ps1 = con.prepareStatement("SELECT * FROM Tender WHERE id = ?");
+	        ps1.setString(1, tenderId);
+	        ResultSet rs1 = ps1.executeQuery();
+	        if (!rs1.next()) {
+	            return "Tender not found";
+	        }
+	        // check if the vendor and bidder exist
+	        PreparedStatement ps2 = con.prepareStatement("SELECT * FROM Vendor WHERE id = ?");
+	        ps2.setString(1, vendorId);
+	        ResultSet rs2 = ps2.executeQuery();
+	        if (!rs2.next()) {
+	            return "Vendor not found";
+	        }
+	        PreparedStatement ps3 = con.prepareStatement("SELECT * FROM Bidder WHERE id = ?");
+	        ps3.setString(1, bidderId);
+	        ResultSet rs3 = ps3.executeQuery();
+	        if (!rs3.next()) {
+	            return "Bidder not found";
+	        }
+	        // assign the tender to the vendor
+	        PreparedStatement ps4 = con.prepareStatement("UPDATE Tender SET vendor_id = ?, bidder_id = ? WHERE id = ?");
+	        ps4.setString(1, vendorId);
+	        ps4.setString(2, bidderId);
+	        ps4.setString(3, tenderId);
+	        int a = ps4.executeUpdate();
+	        if (a > 0) {
+	            message = "Tender assigned to vendor successfully!";
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return message;
 	}
+
 
 	@Override
 	public List<Vendor> getAllVendor() {
-		// TODO Auto-generated method stub
 	List<Vendor> vendors = new ArrayList<>();
 		
 		try(Connection conn = DButil.provideConnection()) {
